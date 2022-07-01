@@ -153,9 +153,36 @@ app.layout = html.Div(
         html.Div(
             className='card',
             children=[
+                html.H3('Machine-readable PPOP policy', className='card-title'),
                 html.Pre(id='generated', className='card-text', children='')
             ]
         ),
+        html.Div(
+            className='card',
+            children=[
+                html.H3('Human-readable PPOP policy', className='card-title'),
+                html.P(id='date', className='card-text', children=''),
+                html.Div(
+                    id='human-div',
+                    children=[
+                        html.B('Summary of the processing conditions'),
+                        html.P('In an effort to provide you with a clear and comprehensible overview of how we process your Personal Information, please find below a quick summary with the main issues regarding the data processing activities carried out by us. For further information, please read the complete Privacy Policy below.'),
+                    ],
+                    style= {'display': 'none'}
+                ),
+                html.Br(),html.Br(),
+                html.Div(
+                    id='table-summary',
+                    children=[
+                        html.Table(id='first-table', children=['Summary']),
+                    ],
+                    style= {'display': 'none'}
+                ),
+                html.Br(),html.Br(),
+                html.B('Who We Are', id='whoweare', style= {'display': 'none'}),
+                html.P(id='whoweare-controller')
+            ]
+        )
     ]
 )
 
@@ -249,9 +276,25 @@ def generate_policy(description, controller_name, controller_address, controller
 @app.callback([Output('generated', 'children')],
               [Input('generate-btn', 'n_clicks')],
               prevent_initial_call=True)
-def display_policy(n_clicks):
+def display_machine_policy(n_clicks):
     a = g.serialize(format='turtle').decode("utf-8")
     return [a]
+
+@app.callback([Output('date', 'children'),
+               Output('human-div', 'style'),
+               Output('table-summary', 'style'),
+               Output('whoweare', 'style'),
+               Output('whoweare-controller', 'children')],
+              [Input('generate-btn', 'n_clicks'),
+               Input('controller-name', 'value'),
+               Input('personal-data', 'value')],
+              prevent_initial_call=True)
+def display_human_policy(n_clicks, controller_name, personal_data):
+    effective_date = 'Effective Date: ' + str(date.today())
+    display_width = {'display': 'inline-block', 'width': '60%'}
+    display = {'display': 'inline-block'}
+    controller = controller_name + ' is a Data Controller for your Personal Data.'
+    return effective_date, display_width, display, display, controller
 
 if __name__ == '__main__':
     app.run_server(debug=True)
