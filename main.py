@@ -144,7 +144,7 @@ app.layout = html.Div(
                 html.Div(
                     id='button-div',
                     children=[
-                        html.A("Generate offer", id="generate-btn", className='card-button'),
+                        html.A("Generate policy", id="generate-btn", className='card-button'),
                         html.Br(),html.Br()
                     ]
                 )
@@ -174,7 +174,30 @@ app.layout = html.Div(
                 html.Div(
                     id='table-summary',
                     children=[
-                        html.Table(id='first-table', children=['Summary']),
+                        html.Table(
+                            [html.Tr([html.Th('Summary', colSpan=2, style={'border': '2px solid black'})])] +
+                            [html.Tr([
+                                html.Th('Data Controller', style={'border': '2px solid black'}),
+                                html.Td(id='table-controller', style={'border': '2px solid black'})
+                            ])] + 
+                            [html.Tr([
+                                html.Th('Purposes', style={'border': '2px solid black'}),
+                                html.Td(id='table-purpose', style={'border': '2px solid black'})
+                            ])] + 
+                            [html.Tr([
+                                html.Th('Legal basis', style={'border': '2px solid black'}),
+                                html.Td(id='table-legal', style={'border': '2px solid black'})
+                            ])] + 
+                            [html.Tr([
+                                html.Th('Data Subject’s Rights', style={'border': '2px solid black'}),
+                                html.Td('All available legal rights provided by the applicable data protection regulation', style={'border': '2px solid black'})
+                            ])] + 
+                            [html.Tr([
+                                html.Th('Additional Information', style={'border': '2px solid black', 'width':'200px'}),
+                                html.Td(id='table-additional', style={'border': '2px solid black', 'width':'800px'})
+                            ])],
+                        )
+
                     ],
                     style= {'display': 'none'}
                 ),
@@ -284,17 +307,26 @@ def display_machine_policy(n_clicks):
                Output('human-div', 'style'),
                Output('table-summary', 'style'),
                Output('whoweare', 'style'),
-               Output('whoweare-controller', 'children')],
+               Output('whoweare-controller', 'children'),
+               Output('table-controller', 'children'),
+               Output('table-purpose', 'children'),
+               Output('table-legal', 'children'),
+               Output('table-additional', 'children')],
               [Input('generate-btn', 'n_clicks'),
                Input('controller-name', 'value'),
+               Input('purpose', 'value'),
+               Input('legal-basis', 'value'),
+               Input('controller-email', 'value'),
                Input('personal-data', 'value')],
               prevent_initial_call=True)
-def display_human_policy(n_clicks, controller_name, personal_data):
+def display_human_policy(n_clicks, controller_name, purpose, legal_basis, controller_email, personal_data):
     effective_date = 'Effective Date: ' + str(date.today())
     display_width = {'display': 'inline-block', 'width': '60%'}
     display = {'display': 'inline-block'}
     controller = controller_name + ' is a Data Controller for your Personal Data.'
-    return effective_date, display_width, display, display, controller
+    additional = 'Please see below the complete privacy policy for any additional detail regarding how we comply with data protection regulations. Any question can be sent to ' + controller_email
+    
+    return effective_date, display_width, display, display, controller, controller_name, purpose, legal_basis, additional
 
 if __name__ == '__main__':
     app.run_server(debug=True)
